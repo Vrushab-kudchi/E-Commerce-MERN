@@ -8,6 +8,7 @@ import morgan from "morgan";
 import dbConnect from "./config/dbConnect.js";
 import authRouter from "./routes/authRoute.js";
 import productRouter from "./routes/productRoute.js";
+import blogRouter from "./routes/blogRoute.js";
 import bodyParser from "body-parser";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
@@ -21,6 +22,7 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use("/api/user", authRouter);
 app.use("/api/product", productRouter);
+app.use("/api/blog", blogRouter);
 app.use(notFound);
 app.use(errorHandler);
 
