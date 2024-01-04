@@ -1,4 +1,5 @@
 import Product from "../models/productModel.js";
+import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
 import slugify from "slugify";
 
@@ -88,6 +89,98 @@ export const getAllProduct = asyncHandler(async (req, res) => {
 
     const product = await query;
     res.status(200).send({ product });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const addToWishList = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { productId } = req.body;
+  try {
+    const user = await User.findById(_id);
+    const alreadyadded = user.wishlist.find(
+      (id) => id.toString() === productId
+    );
+    if (alreadyadded) {
+      let user = await User.findByIdAndUpdate(
+        _id,
+        {
+          $pull: { wishlist: productId },
+        },
+        {
+          new: true,
+        }
+      );
+      res.status(200).send(user);
+    } else {
+      let user = await User.findByIdAndUpdate(
+        _id,
+        {
+          $push: { wishlist: productId },
+        },
+        {
+          new: true,
+        }
+      );
+      res.status(200).send(user);
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const rating = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { star, productId, comment } = req.body;
+  try {
+    const product = await Product.findById(productId);
+    let alreadyRated = product.ratings.find(
+      (userId) => userId.postedby.toString() === _id.toString()
+    );
+    if (alreadyRated) {
+      const updateRating = await Product.updateOne(
+        {
+          ratings: { $elemMatch: alreadyRated },
+        },
+        {
+          $set: { "ratings.$.star": star, "ratings.$.comment": comment },
+        },
+        {
+          new: true,
+        }
+      );
+    } else {
+      const rateProduct = await Product.findByIdAndUpdate(
+        productId,
+        {
+          $push: {
+            ratings: {
+              star: star,
+              comment: comment,
+              postedby: _id,
+            },
+          },
+        },
+        {
+          new: true,
+        }
+      );
+    }
+    const getallratings = await Product.findById(productId);
+    let totalRating = getallratings.ratings.length;
+    let ratingsum = getallratings.ratings
+      .map((item) => item.star)
+      .reduce((prev, curr) => prev + curr, 0);
+    let actualRating = Math.round(ratingsum / totalRating);
+    let finalproduct = await Product.findByIdAndUpdate(
+      productId,
+      {
+        totalRating: actualRating,
+      },
+      { new: true }
+    );
+    res.json(finalproduct);
   } catch (error) {
     throw new Error(error);
   }
