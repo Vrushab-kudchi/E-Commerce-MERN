@@ -1,6 +1,7 @@
 import Blog from "../models/blogModel.js";
-import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
+import { cloudinaryUploadImage } from "../utils/cloudinary.js";
+import fs from "fs";
 import validateMongodbid from "../utils/validateMongodbId.js";
 
 export const createBlog = asyncHandler(async (req, res) => {
@@ -167,6 +168,34 @@ export const dislikeBlog = asyncHandler(async (req, res) => {
       );
       res.json(blog);
     }
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const uploadImage = asyncHandler(async (req, res) => {
+  const filePath = req.url;
+  const { id } = req.params;
+  validateMongodbid(id);
+  try {
+    const url = await Promise.all(
+      filePath.map(async (path) => {
+        const cloudinaryResult = await cloudinaryUploadImage(path);
+        fs.unlinkSync(path);
+        return cloudinaryResult;
+      })
+    );
+    const uploadedImages = await Blog.findByIdAndUpdate(
+      id,
+      {
+        images: url.map((file) => ({
+          public_id: file.public_id,
+          url: file.url,
+        })),
+      },
+      { new: true }
+    );
+    res.status(200).send(uploadedImages);
   } catch (error) {
     throw new Error(error);
   }

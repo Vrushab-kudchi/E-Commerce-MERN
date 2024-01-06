@@ -1,18 +1,21 @@
 import cloudinary from "cloudinary";
-import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_NAME,
-  api_key: process.env.CLOUDINARY_API_ID,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.SECRET_KEY,
 });
 
-const cloudinaryUploadImage = async (filepath) => {
+export const cloudinaryUploadImage = async (filePath) => {
   try {
-    const result = await cloudinary.v2.uploader.upload(filepath);
-    return result.secure_url;
+    const result = await cloudinary.uploader.upload(filePath);
+    return {
+      public_id: result.public_id,
+      url: result.secure_url,
+      asset_id: result.asset_id,
+    };
   } catch (error) {
-    console.error("Error Occurred While Uploading Image", error);
-    throw new Error(error);
+    console.error("Cloudinary upload error:", error);
+    throw error; // rethrow the error to propagate it further if needed
   }
 };
