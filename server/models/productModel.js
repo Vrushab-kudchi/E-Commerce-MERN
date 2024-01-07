@@ -44,10 +44,13 @@ var productSchema = new mongoose.Schema(
         url: String,
       },
     ],
-    color: {
-      type: String,
-      required: true,
-    },
+    color: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Color",
+      },
+    ],
+    tags: [],
     ratings: [
       {
         star: {
