@@ -16,6 +16,6 @@ export const cloudinaryUploadImage = async (filePath) => {
     };
   } catch (error) {
     console.error("Cloudinary upload error:", error);
-    throw error; // rethrow the error to propagate it further if needed
+    throw error;
   }
 };

@@ -1,4 +1,9 @@
 import User from "../models/userModel.js";
+import Product from "../models/productModel.js";
+import Cart from "../models/cartModel.js";
+import Coupon from "../models/couponModel.js";
+import Order from "../models/orderModel.js";
+
 import asyncHandler from "express-async-handler";
 import { generateToken } from "../config/jwtToken.js";
 import validateMongodbid from "../utils/validateMongodbId.js";
@@ -6,6 +11,7 @@ import { generateRefreshToken } from "../config/refreshToken.js";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "./emailCtrl.js";
 import crypto from "crypto";
+import uniqid from "uniqid";
 
 // @desc Create a new User
 export const createUser = asyncHandler(async (req, res) => {
@@ -38,6 +44,36 @@ export const loginUser = asyncHandler(async (req, res) => {
       email: findUser?.email,
       mobile: findUser?.mobile,
       token: generateToken(findUser?._id),
+    });
+  } else {
+    throw new Error("Invalid Credentails");
+  }
+});
+
+// @desc Login Admin and return jsonwebtoken
+export const loginAdmin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  const findAdmin = await User.findOne({ email });
+  // Checking user exists or not
+  if (findAdmin.role !== "admin") throw new Error("Not Authorized User");
+  if (findAdmin && (await findAdmin.ispasswordMatched(password))) {
+    const refreshToken = await generateRefreshToken(findAdmin?._id);
+    await User.findByIdAndUpdate(
+      findAdmin._id,
+      { refreshToken },
+      { new: true }
+    );
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 72 * 60 * 60 * 1000,
+    });
+    res.status(200).send({
+      _id: findAdmin?._id,
+      firstname: findAdmin?.firstname,
+      lastname: findAdmin?.lastname,
+      email: findAdmin?.email,
+      mobile: findAdmin?.mobile,
+      token: generateToken(findAdmin?._id),
     });
   } else {
     throw new Error("Invalid Credentails");
@@ -103,6 +139,24 @@ export const updateAUser = asyncHandler(async (req, res) => {
       { new: true }
     );
     res.status(200).send(updatedUser);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+//@desc save User Address
+export const saveAddress = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongodbid(_id);
+  try {
+    const updateUser = await User.findByIdAndUpdate(
+      _id,
+      {
+        address: req.body?.address,
+      },
+      { new: true }
+    );
+    res.status(200).send(updateUser);
   } catch (error) {
     throw new Error(error);
   }
@@ -227,4 +281,166 @@ export const resetPassword = asyncHandler(async (req, res) => {
   user.passwordResetExpires = undefined;
   await user.save();
   res.json(user);
+});
+
+export const getWishList = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  try {
+    const findUser = await User.findById(_id).populate("wishlist");
+    res.status(200).send(findUser);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const userCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { cart } = req.body;
+  validateMongodbid(_id);
+  try {
+    let products = [];
+    const user = await User.findById(_id);
+    const alreadyExistCart = await Cart.findOne({ orderBy: user._id });
+    if (alreadyExistCart) {
+      alreadyExistCart.remove();
+    }
+    for (let i = 0; i < cart.length; i++) {
+      let object = {};
+      object.product = cart[i]._id;
+      object.count = cart[i].count;
+      object.color = cart[i].color;
+      let getPrice = await Product.findById(cart[i]._id).select("price").exec();
+      object.price = getPrice.price;
+      products.push(object);
+    }
+    let cartTotal = 0;
+    products.forEach((item) => {
+      cartTotal += item.count * item.price;
+    });
+    let newCart = await Cart.create({
+      products,
+      cartTotal,
+      orderBy: user._id,
+    });
+    res.status(200).send(newCart);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const getUserCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongodbid(_id);
+  try {
+    const cart = await Cart.findOne({ orderBy: _id });
+    res.status(200).send(cart);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const emptyCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongodbid(_id);
+  try {
+    const removeCart = await Cart.findOneAndDelete({ orderBy: _id });
+    res.status(200).send(removeCart);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const applyCoupon = asyncHandler(async (req, res) => {
+  const { coupon } = req.body;
+  const { _id } = req.user;
+  const validCoupon = await Coupon.findOne({ name: coupon });
+  if (validCoupon === null) throw new Error("Invalid Coupon");
+  const user = await User.findById(_id);
+  let { products, cartTotal } = await Cart.findOne({ orderBy: _id });
+  let totalAfterDiscount = (
+    cartTotal -
+    (cartTotal * validCoupon.discount) / 100
+  ).toFixed(2);
+  await Cart.findOneAndUpdate(
+    { orderBy: _id },
+    {
+      totalAfterDiscount,
+    },
+    {
+      new: true,
+    }
+  );
+  res.json(totalAfterDiscount);
+});
+
+export const createOrder = asyncHandler(async (req, res) => {
+  const { COD, couponApplied } = req.body;
+  const { _id } = req.user;
+  validateMongodbid(_id);
+  try {
+    if (!COD) throw new Error("Create cash Order Failed");
+    let userCart = await Cart.findOne({ orderBy: _id });
+    let finalAmount = 0;
+    if (couponApplied && userCart.totalAfterDiscount) {
+      finalAmount = userCart.totalAfterDiscount;
+    } else {
+      finalAmount = userCart.cartTotal;
+    }
+    let newOder = await new Order({
+      products: userCart.products,
+      paymentIntent: {
+        id: uniqid(),
+        method: "COD",
+        amount: finalAmount,
+        status: "Cash on Delivery",
+        created: Date.now(),
+        currency: "Rs",
+      },
+      orderBy: _id,
+      orderStatus: "Cash on Delivery",
+    }).save();
+
+    let update = userCart.products.map((item) => {
+      return {
+        updateOne: {
+          filter: { _id: item.product },
+          update: { $inc: { quantity: -item.count, sold: +item.count } },
+        },
+      };
+    });
+    const updated = await Product.bulkWrite(update, {});
+    res.json({ message: "Success" });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const getOrders = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongodbid(_id);
+  try {
+    const userOrders = await Order.find({ orderBy: _id })
+      .populate("products.product")
+      .exec();
+    res.json(userOrders);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const updateOrderStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  validateMongodbid(id);
+  try {
+    const updateOrderStatus = await Order.findByIdAndUpdate(id, {
+      orderStatus: status,
+      paymentIntent: {
+        status: status,
+      },
+    });
+    res.status(200).send(updateOrderStatus);
+  } catch (error) {
+    throw new Error(error);
+  }
 });
