@@ -14,6 +14,7 @@ import BlogCategoryRouter from "./routes/blogCatRoute.js";
 import brandRouter from "./routes/brandRoute.js";
 import couponRouter from "./routes/couponRoute.js";
 import colorRouter from "./routes/colorRoute.js";
+import enquiryRouter from "./routes/enqRoute.js";
 import bodyParser from "body-parser";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
@@ -33,6 +34,7 @@ app.use("/api/blogcategory", BlogCategoryRouter);
 app.use("/api/brand", brandRouter);
 app.use("/api/coupon", couponRouter);
 app.use("/api/color", colorRouter);
+app.use("/api/enquiry", enquiryRouter);
 app.use(notFound);
 app.use(errorHandler);
 

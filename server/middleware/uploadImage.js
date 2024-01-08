@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 
 const multerStorage = multer.diskStorage({
   // destination: function (req, file, cb) {
-  //   cb(null, path.join(__dirname, "../", "/public/images"));
+  //   cb(null, path.join(__dirname, "../public/images"));
   // },
   filename: function (req, file, cb) {
     cb(null, file.originalname + "-" + Date.now() + ".jpeg");
@@ -27,10 +27,11 @@ const multerFilter = (req, file, cb) => {
 export const uploadPhoto = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
-  limits: { fileSize: 20000000 },
+  limits: { fileSize: 50000000 },
 });
 
 export const productImageResize = async (req, res, next) => {
+  console.log(req.files);
   if (!req.files) return next();
   let urls = [];
   await Promise.all(

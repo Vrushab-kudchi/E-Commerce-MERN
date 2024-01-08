@@ -19,3 +19,17 @@ export const cloudinaryUploadImage = async (filePath) => {
     throw error;
   }
 };
+
+export const cloudinaryDeleteImage = async (filePath) => {
+  try {
+    const result = await cloudinary.uploader.destroy(filePath);
+    return {
+      public_id: result.public_id,
+      url: result.secure_url,
+      asset_id: result.asset_id,
+    };
+  } catch (error) {
+    console.error("Cloudinary upload error:", error);
+    throw error;
+  }
+};
