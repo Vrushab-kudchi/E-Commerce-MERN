@@ -1,5 +1,10 @@
 import { NavLink, Link } from "react-router-dom";
 import { BsSearch } from "react-icons/bs";
+import compare from "../images/compare.svg";
+import wishlist from "../images/wishlist.svg";
+import user from "../images/user.svg";
+import cart from "../images/cart.svg";
+import menu from "../images/menu.svg";
 
 export const Header = () => {
   return (
@@ -16,7 +21,6 @@ export const Header = () => {
               <p className="text-end text-white mb-0">
                 Call Support:{" "}
                 <a className="text-white" href="tel:+918310374677">
-                  {" "}
                   +91 8310374677
                 </a>
                 ,
@@ -30,7 +34,9 @@ export const Header = () => {
           <div className="row align-items-center">
             <div className="col-2">
               <h2>
-                <Link className="text-white">DevTech</Link>
+                <Link to={"/"} className="text-white">
+                  DevTech
+                </Link>
               </h2>
             </div>
             <div className="col-5">
@@ -50,8 +56,11 @@ export const Header = () => {
             <div className="col-5">
               <div className="header-upper-link d-flex align-items-center justify-content-between">
                 <div>
-                  <Link className="d-flex align-items-center gap-10 text-white">
-                    <img src="images/compare.svg" alt="Compare" />
+                  <Link
+                    to={"compare-product"}
+                    className="d-flex align-items-center gap-10 text-white"
+                  >
+                    <img src={compare} alt="Compare" />
                     <p className="mb-0">
                       Compare <br />
                       Products
@@ -60,8 +69,11 @@ export const Header = () => {
                 </div>
 
                 <div>
-                  <Link className="d-flex align-items-center gap-10 text-white">
-                    <img src="images/wishlist.svg" alt="Wishlist" />
+                  <Link
+                    to={"/wishlist"}
+                    className="d-flex align-items-center gap-10 text-white"
+                  >
+                    <img src={wishlist} alt="Wishlist" />
                     <p className="mb-0">
                       Favourite <br />
                       wishlist
@@ -70,8 +82,11 @@ export const Header = () => {
                 </div>
 
                 <div>
-                  <Link className="d-flex align-items-center gap-10 text-white">
-                    <img src="images/user.svg" alt="user" />
+                  <Link
+                    to={"/login"}
+                    className="d-flex align-items-center gap-10 text-white"
+                  >
+                    <img src={user} alt="user" />
                     <p className="mb-0">
                       Login <br />
                       My Account
@@ -80,8 +95,11 @@ export const Header = () => {
                 </div>
 
                 <div>
-                  <Link className="d-flex align-items-center gap-10 text-white">
-                    <img src="images/cart.svg" alt="Cart" />
+                  <Link
+                    to={"/cart"}
+                    className="d-flex align-items-center gap-10 text-white"
+                  >
+                    <img src={cart} alt="Cart" />
                     <div className="d-flex flex-column gap-10">
                       <span className="badge bg-white text-dark">0</span>
                       <p className="mb-0">Rs 1000</p>
@@ -107,7 +125,7 @@ export const Header = () => {
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     >
-                      <img src="images/menu.svg" alt="Menu Logo" />
+                      <img src={menu} alt="Menu Logo" />
                       <span className="me-5 d-line-block ">Show Category</span>
                     </button>
                     <ul
@@ -136,8 +154,8 @@ export const Header = () => {
                   <div className="menu-links">
                     <div className="d-flex align-items-center gap-15">
                       <NavLink to={"/"}>Home</NavLink>
-                      <NavLink to={"/"}>Our Store</NavLink>
-                      <NavLink to={"/"}>Blogs</NavLink>
+                      <NavLink to={"/product"}>Our Store</NavLink>
+                      <NavLink to={"/blogs"}>Blogs</NavLink>
                       <NavLink to={"/contact"}>Contact</NavLink>
                     </div>
                   </div>

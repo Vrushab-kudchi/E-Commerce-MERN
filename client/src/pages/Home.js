@@ -1,5 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Marquee from "react-fast-marquee";
+import { BlogCard } from "../components/BlogCard";
+import { ProductCard } from "../components/ProductCard";
+import { SpecialProduct } from "../components/SpecialProduct";
 
 export const Home = () => {
   return (
@@ -200,6 +204,123 @@ export const Home = () => {
                   <img src="images/camera.jpg" alt="Camera" />
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="featured-wrapper py-5 home-wrapper-2">
+        <div className="container-xxl">
+          <div className="row">
+            <div className="col-12">
+              <h3 className="section-heading">Featured Collection</h3>
+            </div>
+            <ProductCard />
+            <ProductCard />
+            <ProductCard />
+            <ProductCard />
+          </div>
+        </div>
+      </section>
+
+      {/* <section className="famous-wrapper py-5 home-wrapper-2">
+        <div className="container-xxl">
+          <div className="row">
+            <div className="col-3">
+              <div className="famous-card bg-dark">
+                <h5>Big Screen</h5>
+                <h6>Smart Watch Series 7</h6>
+                <p>For INR 50000 or 8000/month</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section> */}
+
+      <section className="special-wrapper py-5 home-wrapper-2">
+        <div className="container-xxl">
+          <div className="row">
+            <div className="col-12">
+              <h3 className="section-heading">Special Product</h3>
+            </div>
+          </div>
+          <div className="row">
+            <SpecialProduct />
+            <SpecialProduct />
+            <SpecialProduct />
+            <SpecialProduct />
+          </div>
+        </div>
+      </section>
+
+      <section className="popular-wrapper py-5 home-wrapper-2">
+        <div className="container-xxl">
+          <div className="row">
+            <div className="col-12">
+              <h3 className="section-heading">Our Popular Products</h3>
+            </div>
+            <div className="row">
+              <ProductCard />
+              <ProductCard />
+              <ProductCard />
+              <ProductCard />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="marquee-wrapper py-5">
+        <div className="container-xxl">
+          <div className="row">
+            <div className="col-12">
+              <div className="marquee-inner-wrapper card-wrapper">
+                <Marquee className="d-flex">
+                  <div className="mx-4 w-25">
+                    <img src="images/brand-01.png" alt="brands" />
+                  </div>
+                  <div className="mx-4 w-25">
+                    <img src="images/brand-02.png" alt="brands" />
+                  </div>
+                  <div className="mx-4 w-25">
+                    <img src="images/brand-03.png" alt="brands" />
+                  </div>
+                  <div className="mx-4 w-25">
+                    <img src="images/brand-04.png" alt="brands" />
+                  </div>
+                  <div className="mx-4 w-25">
+                    <img src="images/brand-05.png" alt="brands" />
+                  </div>
+                  <div className="mx-4 w-25">
+                    <img src="images/brand-06.png" alt="brands" />
+                  </div>
+                  <div className="mx-4 w-25">
+                    <img src="images/brand-07.png" alt="brands" />
+                  </div>
+                  <div className="mx-4 w-25">
+                    <img src="images/brand-08.png" alt="brands" />
+                  </div>
+                </Marquee>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="blog-wrapper py-5 home-wrapper-2">
+        <div className="container-xxl">
+          <div className="row">
+            <h3 className="section-heading">Latest Blogs</h3>
+            <div className="col-3">
+              <BlogCard />
+            </div>
+            <div className="col-3">
+              <BlogCard />
+            </div>
+            <div className="col-3">
+              <BlogCard />
+            </div>
+            <div className="col-3">
+              <BlogCard />
             </div>
           </div>
         </div>
