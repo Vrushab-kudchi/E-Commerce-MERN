@@ -1,8 +1,40 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CustomInput } from "../Components/CustomInput";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../features/auth/authSlice";
 
 export const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: Yup.object().shape({
+      email: Yup.string().email("invalid email").required("enter the email"),
+      password: Yup.string()
+        .min(2, "Too Short!")
+        .max(50, "Too Long!")
+        .required("enter the password"),
+    }),
+
+    onSubmit: (values) => {
+      dispatch(login(values));
+    },
+  });
+  const { user, isError, isSuccess, message, isLoading } = useSelector(
+    (state) => state.auth
+  );
+  useEffect(() => {
+    if (!user == null || isSuccess) {
+      navigate("/admin");
+    }
+  }, [user, isError, isSuccess, message, isLoading, navigate]);
   return (
     <>
       <div
@@ -20,32 +52,45 @@ export const Login = () => {
         <div className="my-5 w-25 bg-white rounded-3 mx-auto p-4 gap-4">
           <h3 className="text-center ">Login</h3>
           <p className="text-center ">Login to Your Account To Continue</p>
-          <form action="">
+          <form onSubmit={formik.handleSubmit}>
             <CustomInput
               type="email"
               placeholder="Email Address"
               label="Email Address"
-              id="email"
+              name="email"
+              onChange={formik.handleChange}
+              value={formik.values.email}
               i_class="w-100 mt-3"
             />
+            <div className="error">
+              {formik.errors.email && formik.touched.email ? (
+                <div>{formik.errors.email}</div>
+              ) : null}
+            </div>
             <CustomInput
               type="password"
               placeholder="Password"
               label="Password"
-              id="password"
-              i_class="w-100 my-3"
+              name="password"
+              onChange={formik.handleChange}
+              value={formik.values.password}
+              i_class="w-100"
             />
-            <div className="mb-3 text-end"> 
+            <div className="error">
+              {formik.errors.password && formik.touched.password ? (
+                <div>{formik.errors.password}</div>
+              ) : null}
+            </div>
+            <div className="mb-3 text-end">
               <Link to={"/forgot-password"}>Forgot Password ?</Link>
             </div>
-            <Link
-              to={"/admin"}
+            <button
               className="border-0 px-3 py-2 text-white w-100"
               type="submit"
               style={{ backgroundColor: "#ffd333" }}
             >
               Login
-            </Link>
+            </button>
           </form>
         </div>
       </div>

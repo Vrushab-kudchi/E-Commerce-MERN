@@ -17,6 +17,7 @@ import colorRouter from "./routes/colorRoute.js";
 import enquiryRouter from "./routes/enqRoute.js";
 import bodyParser from "body-parser";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
+import cors from "cors";
 
 dbConnect();
 app.use(bodyParser.json());
@@ -25,6 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const Port = process.env.PORT || 4000;
 
 app.use(morgan("dev"));
+app.use(cors());
 app.use(cookieParser());
 app.use("/api/user", authRouter);
 app.use("/api/product", productRouter);
