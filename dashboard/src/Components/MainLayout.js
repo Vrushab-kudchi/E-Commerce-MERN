@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 // import UserImg from "../images/customer-4-64x64.jpg";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   AiOutlineDashboard,
   AiOutlineShoppingCart,
@@ -182,8 +184,8 @@ export const MainLayout = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <h5 className="mb-0">Navdeep</h5>
-                <p className="mb-0">navdeepdahiya753@gmail.com</p>
+                <h5 className="mb-0">Vrushab</h5>
+                <p className="mb-0">Kudchivrushab@gmail.com</p>
               </div>
               <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <li>
@@ -217,6 +219,19 @@ export const MainLayout = () => {
             borderRadius: borderRadiusLG,
           }}
         >
+          <ToastContainer
+            position="top-right"
+            autoClose={250}
+            hideProgressBar={false}
+            newestOnTop={true}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transitio="Bounce"
+          />
           <Outlet />
         </Content>
       </Layout>

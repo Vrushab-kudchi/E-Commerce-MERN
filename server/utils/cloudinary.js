@@ -1,4 +1,6 @@
 import cloudinary from "cloudinary";
+import dotenv from "dotenv";
+dotenv.config();
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -8,11 +10,12 @@ cloudinary.config({
 
 export const cloudinaryUploadImage = async (filePath) => {
   try {
-    const result = await cloudinary.uploader.upload(filePath);
+    const result = await cloudinary.uploader.upload(filePath, {
+      api_key: process.env.API_KEY,
+    });
     return {
       public_id: result.public_id,
       url: result.secure_url,
-      asset_id: result.asset_id,
     };
   } catch (error) {
     console.error("Cloudinary upload error:", error);

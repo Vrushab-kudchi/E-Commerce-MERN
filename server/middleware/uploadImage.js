@@ -31,7 +31,6 @@ export const uploadPhoto = multer({
 });
 
 export const productImageResize = async (req, res, next) => {
-  console.log(req.files);
   if (!req.files) return next();
   let urls = [];
   await Promise.all(

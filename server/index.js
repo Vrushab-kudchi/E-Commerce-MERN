@@ -15,6 +15,7 @@ import brandRouter from "./routes/brandRoute.js";
 import couponRouter from "./routes/couponRoute.js";
 import colorRouter from "./routes/colorRoute.js";
 import enquiryRouter from "./routes/enqRoute.js";
+import uploadRouter from "./routes/uploadRoute.js";
 import bodyParser from "body-parser";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 import cors from "cors";
@@ -37,6 +38,7 @@ app.use("/api/brand", brandRouter);
 app.use("/api/coupon", couponRouter);
 app.use("/api/color", colorRouter);
 app.use("/api/enquiry", enquiryRouter);
+app.use("/api/upload", uploadRouter);
 app.use(notFound);
 app.use(errorHandler);
 

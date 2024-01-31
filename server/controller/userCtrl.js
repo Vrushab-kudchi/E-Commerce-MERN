@@ -419,10 +419,21 @@ export const getOrders = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongodbid(_id);
   try {
-    const userOrders = await Order.find({ orderBy: _id })
+    const userOrders = await Order.findOne({ orderBy: _id })
       .populate("products.product")
-      .exec();
+      .populate("orderBy");
     res.json(userOrders);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const getAllOrders = asyncHandler(async (req, res) => {
+  try {
+    const allUserOrders = await Order.find()
+      .populate("products.product")
+      .populate("orderBy");
+    res.json(allUserOrders);
   } catch (error) {
     throw new Error(error);
   }
