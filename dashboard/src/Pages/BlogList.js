@@ -39,7 +39,7 @@ export const BlogList = () => {
   const blogState = useSelector((state) => state.blog.blogs);
 
   const data1 = [];
-  for (let i = 0; i < blogState.length; i++) {
+  for (let i = 0; i < blogState?.length; i++) {
     data1.push({
       key: i + 1,
       name: blogState[i].title,

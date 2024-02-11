@@ -9,6 +9,7 @@ import {
   AiOutlineUser,
   AiOutlineBgColors,
 } from "react-icons/ai";
+import { RiCoupon3Line } from "react-icons/ri";
 import { IoIosNotifications } from "react-icons/io";
 import { Link, Outlet } from "react-router-dom";
 import { FaClipboardList, FaBlogger } from "react-icons/fa";
@@ -27,7 +28,7 @@ export const MainLayout = () => {
   } = theme.useToken();
 
   return (
-    <Layout>
+    <Layout /* onContextMenu={(e) => e.preventDefault()} */ >
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical">
           <h2 className="text-white fs-5 text-center py-3 mb-0">
@@ -107,6 +108,23 @@ export const MainLayout = () => {
               key: "orders",
               icon: <FaClipboardList className="fs-4" />,
               label: "Orders",
+            },
+            {
+              key: "marketing",
+              icon: <RiCoupon3Line className="fs-4" />,
+              label: "Marketing",
+              children: [
+                {
+                  key: "coupon",
+                  icon: <ImBlog className="fs-4" />,
+                  label: "Add Coupon",
+                },
+                {
+                  key: "coupon-list",
+                  icon: <RiCoupon3Line className="fs-4" />,
+                  label: "Coupon List",
+                },
+              ],
             },
             {
               key: "blogs",

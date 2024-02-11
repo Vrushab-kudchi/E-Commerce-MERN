@@ -11,7 +11,7 @@ import { getBrand } from "../features/brand/brandSlice";
 import { getColor } from "../features/color/colorSlice";
 import Dropzone from "react-dropzone";
 import { deleteImage, uploadImage } from "../features/upload/uploadSlice";
-import { createProducts } from "../features/product/productSlice";
+import { createProducts, resetState } from "../features/product/productSlice";
 import { toast } from "react-toastify";
 
 //react-select
@@ -65,6 +65,7 @@ export const AddProduct = () => {
       setInputValue("");
       dispatch(uploadImage([]));
       setTimeout(() => {
+        dispatch(resetState())
         navigate("/admin/product-list");
       }, [3000]);
 
@@ -102,7 +103,7 @@ export const AddProduct = () => {
   }, [imgState, formik, tags]);
 
   let color = [];
-  colorState.map((item) => {
+  colorState?.map((item) => {
     return color.push({
       label: item.title,
       value: item._id,
@@ -176,7 +177,7 @@ export const AddProduct = () => {
             value={formik.values.brand}
           >
             <option value="">Select Brand</option>
-            {brandState.map((item, index) => {
+            {brandState?.map((item, index) => {
               return (
                 <option value={item.title} key={index}>
                   {item.title}
@@ -289,9 +290,10 @@ export const AddProduct = () => {
               );
             })}
           </div>
+          
           <button
-            className="btn btn-success border-0 rounded-3 my-5"
             type="submit"
+            className="btn btn-success border-0 rounded-3 my-5"
           >
             Add Product
           </button>

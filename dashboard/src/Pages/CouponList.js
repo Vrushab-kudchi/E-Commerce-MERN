@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
+import { Table } from "antd";
+import { useDispatch, useSelector } from "react-redux";
 import { BiEdit } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
-import { useDispatch, useSelector } from "react-redux";
-import { Table } from "antd";
-import { getProducts } from "../features/product/productSlice";
 import { Link } from "react-router-dom";
+import { getCoupon } from "../features/coupon/couponSlice";
 
 const columns = [
   {
@@ -14,21 +14,14 @@ const columns = [
   {
     title: "Name",
     dataIndex: "name",
-    sorter: (a, b) => a.name.localeCompare(b.name),
   },
   {
-    title: "Brand",
-    dataIndex: "brand",
-    sorter: (a, b) => a.brand.localeCompare(b.brand),
+    title: "Expiry",
+    dataIndex: "expiry",
   },
   {
-    title: "Category",
-    dataIndex: "category",
-    sorter: (a, b) => a.category.localeCompare(b.category),
-  },
-  {
-    title: "Quantity",
-    dataIndex: "quantity",
+    title: "Discount",
+    dataIndex: "discount",
   },
   {
     title: "Action",
@@ -36,21 +29,23 @@ const columns = [
   },
 ];
 
-export const ProductList = () => {
+export const CouponList = () => {
   const dispatch = useDispatch();
+
   useEffect(() => {
-    dispatch(getProducts());
+    dispatch(getCoupon());
   }, [dispatch]);
-  const productState = useSelector((state) => state.product.products);
+
+  const couponState = useSelector((state) => state.coupon?.coupons);
 
   const data1 = [];
-  for (let i = 0; i < productState?.length; i++) {
+  for (let i = 0; i < couponState?.length; i++) {
+    const formattedExpiry = new Date(couponState[i].expiry).toLocaleString();
     data1.push({
       key: i + 1,
-      name: productState[i].title,
-      brand: productState[i].brand,
-      category: productState[i].category,
-      quantity: productState[i].quantity,
+      name: couponState[i].name,
+      expiry: formattedExpiry,
+      discount: couponState[i].discount + " %",
       action: (
         <>
           <Link to={"/"} className="fs-3 text-info">
@@ -63,11 +58,10 @@ export const ProductList = () => {
       ),
     });
   }
-
   return (
     <>
       <div>
-        <h3 className="title">Product</h3>
+        <h3 className="title">Coupon</h3>
         <div>
           <Table columns={columns} dataSource={data1} />
         </div>
