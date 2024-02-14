@@ -1,10 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Table } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { BiEdit } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import { Link } from "react-router-dom";
-import { getBlogCategory } from "../features/bCategory/bCategorySlice";
+import {
+  deleteBlogCategory,
+  getBlogCategory,
+} from "../features/bCategory/bCategorySlice";
+import Custommodel from "../Components/Custommodel";
 
 const columns = [
   {
@@ -22,6 +26,18 @@ const columns = [
 ];
 
 export const BlogCatList = () => {
+  const [open, setOpen] = useState(false);
+  const [deleteCategoryId, setDeleteCategoryId] = useState("");
+
+  const showModal = (id) => {
+    setOpen(true);
+    setDeleteCategoryId(id);
+  };
+
+  const hideModal = () => {
+    setOpen(false);
+  };
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -37,16 +53,26 @@ export const BlogCatList = () => {
       name: blogState[i].title,
       action: (
         <>
-          <Link to={"/"} className="fs-3 text-info">
+          <Link
+            to={`/admin/blog-category/${blogState[i]._id}`}
+            className="fs-3 text-info"
+          >
             <BiEdit />
           </Link>
-          <Link className="ms-3 fs-3 text-danger" to={"/"}>
-            <AiFillDelete />
+          <Link className="ms-3 fs-3 text-danger">
+            <AiFillDelete onClick={() => showModal(blogState[i]._id)} />
           </Link>
         </>
       ),
     });
   }
+  const handleDeleteCategory = (id) => {
+    dispatch(deleteBlogCategory(id));
+    setOpen(false);
+    setTimeout(() => {
+      dispatch(getBlogCategory());
+    }, 100);
+  };
   return (
     <>
       <div>
@@ -54,6 +80,14 @@ export const BlogCatList = () => {
         <div>
           <Table columns={columns} dataSource={data1} />
         </div>
+        <Custommodel
+          hideModal={hideModal}
+          open={open}
+          performAction={() => {
+            handleDeleteCategory(deleteCategoryId);
+          }}
+          title="Are you sure you want to delete this Category?"
+        />
       </div>
     </>
   );

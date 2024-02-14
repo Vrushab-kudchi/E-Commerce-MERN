@@ -35,6 +35,7 @@ export const deleteImage = createAsyncThunk(
   }
 );
 
+
 const uploadSlice = createSlice({
   name: "Upload",
   initialState,

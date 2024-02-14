@@ -408,7 +408,7 @@ export const createOrder = asyncHandler(async (req, res) => {
         },
       };
     });
-    const updated = await Product.bulkWrite(update, {});
+    await Product.bulkWrite(update, {});
     res.json({ message: "Success" });
   } catch (error) {
     throw new Error(error);
@@ -434,6 +434,19 @@ export const getAllOrders = asyncHandler(async (req, res) => {
       .populate("products.product")
       .populate("orderBy");
     res.json(allUserOrders);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const getOrderById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbid(id);
+  try {
+    const getOrder = await Order.findOne({ orderBy: id })
+      .populate("products.product")
+      .populate("orderBy");
+    res.json(getOrder);
   } catch (error) {
     throw new Error(error);
   }

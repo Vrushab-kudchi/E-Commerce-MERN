@@ -47,9 +47,9 @@ export const Orders = () => {
       key: i + 1,
       name:
         orderState[i].orderBy.firstname + " " + orderState[i].orderBy.lastname,
-      product: orderState[i].products.map((item, index) => {
-        return <p key={index}>{item.product.title}</p>;
-      }),
+      product: (
+        <Link to={`/admin/order/${orderState[i].orderBy._id}`}>View Order</Link>
+      ),
       amount: orderState[i].paymentIntent.amount,
       date: new Date(orderState[i].createdAt).toLocaleString(),
       action: (

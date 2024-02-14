@@ -24,6 +24,7 @@ import {
   getOrders,
   updateOrderStatus,
   getAllOrders,
+  getOrderById,
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -41,10 +42,11 @@ router.get("/all-users", getAllUser);
 router.get("/refresh", handleRefreshToken);
 router.get("/logout", logout);
 router.get("/all-orders", authMiddleware, isAdmin, getAllOrders);
-router.get("/get-orders", authMiddleware, getOrders);
+router.post("/get-orders", authMiddleware, getOrders);
 router.get("/cart", authMiddleware, getUserCart);
 router.get("/wishlist", authMiddleware, getWishList);
 router.get("/:id", authMiddleware, isAdmin, getAUser);
+router.get("/getorderbyuser/:id", authMiddleware, isAdmin, getOrderById);
 
 router.delete("/empty-cart", authMiddleware, emptyCart);
 router.delete("/:id", deleteAUser);

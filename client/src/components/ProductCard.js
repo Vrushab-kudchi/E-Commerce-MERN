@@ -2,7 +2,7 @@ import ReactStars from "react-rating-stars-component";
 import { Link, useLocation } from "react-router-dom";
 import productCompare from "../images/prodcompare.svg";
 import wish from "../images/wish.svg";
-import wishlist from "../images/wishlist.svg";
+// import wishlist from "../images/wishlist.svg";
 import watch from "../images/watch.jpg";
 import watch2 from "../images/watch1.jpeg";
 import addcart from "../images/add-cart.svg";
@@ -11,7 +11,6 @@ import view from "../images/view.svg";
 export const ProductCard = (props) => {
   const { grid } = props;
   let location = useLocation();
-  console.log(location);
   return (
     <>
       <div

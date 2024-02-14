@@ -38,7 +38,7 @@ export const getBlog = asyncHandler(async (req, res) => {
       },
       { new: true }
     );
-    res.status(200).send({ blog });
+    res.status(200).send(blog);
   } catch (error) {
     throw new Error(error);
   }

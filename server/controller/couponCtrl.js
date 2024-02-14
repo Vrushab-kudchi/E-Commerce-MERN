@@ -11,6 +11,15 @@ export const createCoupon = asyncHandler(async (req, res) => {
   }
 });
 
+export const getACoupon = asyncHandler(async (req, res) => {
+  try {
+    const getACoupons = await Coupon.findById(req.params.id);
+    res.status(200).send(getACoupons);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 export const getAllCoupon = asyncHandler(async (req, res) => {
   try {
     const getAllCoupons = await Coupon.find();
