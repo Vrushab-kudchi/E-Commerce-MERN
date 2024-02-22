@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CustomInput } from "../Components/CustomInput";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +11,12 @@ import { getBrand } from "../features/brand/brandSlice";
 import { getColor } from "../features/color/colorSlice";
 import Dropzone from "react-dropzone";
 import { deleteImage, uploadImage } from "../features/upload/uploadSlice";
-import { createProducts, resetState } from "../features/product/productSlice";
+import {
+  createProducts,
+  getAProduct,
+  resetState,
+  updateProduct,
+} from "../features/product/productSlice";
 import { toast } from "react-toastify";
 
 //react-select
@@ -45,6 +50,21 @@ export const AddProduct = () => {
 
   const dispatch = useDispatch();
 
+  const { id } = useParams();
+  const categoryState = useSelector((state) => state.pCategory.category);
+  const brandState = useSelector((state) => state.brand.brands);
+  const colorState = useSelector((state) => state.color.colors);
+  const imgState = useSelector((state) => state.upload.images);
+  const newProduct = useSelector((state) => state.product);
+  const {
+    isLoading,
+    isSucces,
+    isError,
+    createdProduct,
+    updatedProduct,
+    productData,
+  } = newProduct;
+
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -59,19 +79,53 @@ export const AddProduct = () => {
     },
     validationSchema: productSchema,
     onSubmit: (values) => {
-      dispatch(createProducts(values));
-      formik.resetForm();
-      setTags([]);
-      setInputValue("");
-      dispatch(uploadImage([]));
-      setTimeout(() => {
-        dispatch(resetState())
-        navigate("/admin/product-list");
-      }, [3000]);
-
+      if (!id) {
+        dispatch(createProducts(values));
+        formik.resetForm();
+        setTags([]);
+        setInputValue("");
+        dispatch(uploadImage([]));
+        setTimeout(() => {
+          dispatch(resetState());
+          navigate("/admin/product-list");
+        }, [3000]);
+      } else {
+        dispatch(updateProduct({ ...values, _id: id }));
+        formik.resetForm();
+        setTags([]);
+        setInputValue("");
+        dispatch(uploadImage([]));
+        setTimeout(() => {
+          dispatch(resetState());
+          navigate("/admin/product-list");
+        }, [3000]);
+      }
       // alert(JSON.stringify(values, null, 2));
     },
   });
+
+  useEffect(() => {
+    if (id && productData) {
+      formik.setValues({
+        title: productData.title || "",
+        description: productData.description || "",
+        price: productData.price || "",
+        category: productData.category || "",
+        brand: productData.brand || "",
+        color: productData.color || [],
+        quantity: productData.quantity || "",
+        images: productData.title || null,
+      });
+    }
+  }, [id, productData]);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getAProduct(id));
+    } else {
+      dispatch(resetState());
+    }
+  }, [id, dispatch]);
 
   useEffect(() => {
     dispatch(getCategory());
@@ -79,22 +133,17 @@ export const AddProduct = () => {
     dispatch(getColor());
   }, [dispatch]);
 
-  const categoryState = useSelector((state) => state.pCategory.category);
-  const brandState = useSelector((state) => state.brand.brands);
-  const colorState = useSelector((state) => state.color.colors);
-  const imgState = useSelector((state) => state.upload.images);
-  const newProduct = useSelector((state) => state.product);
-  const { isLoading, isSucces, isError, createdProduct } = newProduct;
-
   useEffect(() => {
     if (isLoading) {
       toast.info("Adding Product...");
     } else if (isSucces && createdProduct) {
       toast.success("Product Added");
+    } else if (isSucces && updatedProduct) {
+      toast.success("Success");
     } else if (isError) {
       toast.error("Something Went Wrong");
     }
-  }, [isLoading, isSucces, isError, createdProduct]);
+  }, [isLoading, isSucces, isError, createdProduct, updatedProduct]);
 
   useEffect(() => {
     const tagData = tags.map((item) => item.value);
@@ -112,7 +161,9 @@ export const AddProduct = () => {
 
   return (
     <div>
-      <h3 className="mb-4 title">Add Product</h3>
+      <h3 className="mb-4 title">
+        {id !== undefined ? "Edit" : "Create"} Product
+      </h3>
       <div>
         <form onSubmit={formik.handleSubmit}>
           <CustomInput
@@ -271,31 +322,44 @@ export const AddProduct = () => {
             ) : null}
           </div>
           <div className="showimages d-flex flex-wrap gap-3">
-            {imgState?.map((item, index) => {
-              return (
-                <div className=" position-relative" key={index}>
-                  <button
-                    type="button"
-                    onClick={() => dispatch(deleteImage(item.public_id))}
-                    className="btn-close position-absolute"
-                    style={{ top: "10px", right: "10px" }}
-                  ></button>
-                  <img
-                    src={item.url}
-                    alt="Uploading Images From Dashboard"
-                    width={200}
-                    height={200}
-                  />
-                </div>
-              );
-            })}
+            {(productData?.images ? productData?.images : imgState)?.map(
+              (item, index) => {
+                return (
+                  <div className=" position-relative" key={index}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        dispatch(deleteImage(item.public_id));
+                        formik.setFieldValue("images", null);
+                        if (id) {
+                          dispatch(
+                            updateProduct({ ...productData, images: null })
+                          );
+                          setTimeout(() => {
+                            dispatch(getAProduct(id));
+                          }, 2000);
+                        }
+                      }}
+                      className="btn-close position-absolute"
+                      style={{ top: "10px", right: "10px" }}
+                    ></button>
+                    <img
+                      src={item.url}
+                      alt="Uploading Images From Dashboard"
+                      width={200}
+                      height={200}
+                    />
+                  </div>
+                );
+              }
+            )}
           </div>
-          
+
           <button
             type="submit"
             className="btn btn-success border-0 rounded-3 my-5"
           >
-            Add Product
+            {id !== undefined ? "Edit" : "Create"} Product
           </button>
         </form>
       </div>

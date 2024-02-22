@@ -31,7 +31,7 @@ router.delete("/:id", authMiddleware, isAdmin, deleteProduct);
 
 router.delete("/delete-img/:id", authMiddleware, isAdmin, deleteImage);
 
-router.get("/:id", authMiddleware, isAdmin, getAProduct);
+router.get("/:id", getAProduct);
 router.get("/", getAllProduct);
 
 export default router;

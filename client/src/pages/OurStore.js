@@ -1,11 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BreadCrumb } from "../components/BreadCrumb";
 import { Meta } from "../components/Meta";
 import ReactStars from "react-rating-stars-component";
 import { ProductCard } from "../components/ProductCard";
 import { Color } from "../components/Color";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProduct } from "../features/products/productSlice";
 
 export const OurStore = () => {
+  const dispatch = useDispatch();
+
+  const productState = useSelector((state) => state.product.products);
+
+
+  useEffect(() => {
+    dispatch(getAllProduct());
+  }, [dispatch]);
+
   const [grid, setGrid] = useState(3);
   return (
     <>
@@ -215,7 +226,10 @@ export const OurStore = () => {
               </div>
               <div className="products-list pb-5">
                 <div className="d-flex gap-10 flex-wrap">
-                  <ProductCard grid={grid} />
+                  <ProductCard
+                    data={productState ? productState : []}
+                    grid={grid}
+                  />
                 </div>
               </div>
             </div>

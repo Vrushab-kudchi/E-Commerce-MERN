@@ -36,12 +36,12 @@ export const AddBlog = () => {
     newBlog;
 
   const formik = useFormik({
-    enableReinitialize: true,
+    // enableReinitialize: true,
     initialValues: {
-      title: blogData?.title || "",
-      category: blogData?.category || "",
-      description: blogData?.description || "",
-      images: blogData?.images || "",
+      title: "",
+      category: "",
+      description: "",
+      images: "",
     },
     validationSchema: blogSchema,
     onSubmit: (values) => {
@@ -61,6 +61,18 @@ export const AddBlog = () => {
       // alert(JSON.stringify(values, null, 2));
     },
   });
+
+  
+  useEffect(() => {
+    if (id && blogData) {
+      formik.setValues({
+        title: blogData.title || "",
+        category: blogData.category || "",
+        description: blogData.description || "",
+        images: blogData.images || "",
+      });
+    }
+  }, [id, blogData]);
 
   useEffect(() => {
     if (id) {
@@ -92,7 +104,7 @@ export const AddBlog = () => {
 
   return (
     <div>
-      <h3 className="mb-0">AddBlog</h3>
+      <h3 className="mb-0">{id !== undefined ? "Edit" : "Create"} Blog</h3>
 
       <div>
         <form onSubmit={formik.handleSubmit}>
@@ -195,7 +207,7 @@ export const AddBlog = () => {
           </div>
 
           <button type="submit" className="btn btn-success border-0 mt-5">
-            Add Blog
+            {id !== undefined ? "Edit" : "Create"} Blog
           </button>
         </form>
       </div>

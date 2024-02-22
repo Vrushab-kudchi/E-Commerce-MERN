@@ -1,11 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Marquee from "react-fast-marquee";
 import { BlogCard } from "../components/BlogCard";
 import { ProductCard } from "../components/ProductCard";
 import { SpecialProduct } from "../components/SpecialProduct";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllBlogs } from "../features/blogs/blogSlice";
+import { getAllProduct } from "../features/products/productSlice";
 
 export const Home = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getAllBlogs());
+    dispatch(getAllProduct());
+  }, [dispatch]);
+  const blogState = useSelector((state) => state.blog.blogs);
+  const productState = useSelector((state) => state.product.products);
+
   return (
     <>
       <section className="home-wrapper-1 py-5">
@@ -215,10 +226,15 @@ export const Home = () => {
             <div className="col-12">
               <h3 className="section-heading">Featured Collection</h3>
             </div>
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
+            <div className="row">
+              {" "}
+              <ProductCard
+                data={productState.filter((item) =>
+                  item.tags.includes("featured")
+                )}
+                grid={3}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -245,10 +261,21 @@ export const Home = () => {
             </div>
           </div>
           <div className="row">
-            <SpecialProduct />
-            <SpecialProduct />
-            <SpecialProduct />
-            <SpecialProduct />
+            {productState?.map((item, index) =>
+              item.tags.includes("special") ? (
+                <SpecialProduct
+                  key={index}
+                  id={item?._id}
+                  title={item?.title}
+                  brand={item?.brand}
+                  rating={item?.totalrating}
+                  price={item?.price}
+                  quatity={item?.quantity}
+                  sold={item?.sold}
+                  image={item?.images[0]?.url}
+                />
+              ) : null
+            )}
           </div>
         </div>
       </section>
@@ -260,10 +287,12 @@ export const Home = () => {
               <h3 className="section-heading">Our Popular Products</h3>
             </div>
             <div className="row">
-              <ProductCard />
-              <ProductCard />
-              <ProductCard />
-              <ProductCard />
+              <ProductCard
+                data={productState.filter((item) =>
+                  item.tags.includes("popular")
+                )}
+                grid={3}
+              />
             </div>
           </div>
         </div>
@@ -310,18 +339,20 @@ export const Home = () => {
         <div className="container-xxl">
           <div className="row">
             <h3 className="section-heading">Latest Blogs</h3>
-            <div className="col-3">
-              <BlogCard />
-            </div>
-            <div className="col-3">
-              <BlogCard />
-            </div>
-            <div className="col-3">
-              <BlogCard />
-            </div>
-            <div className="col-3">
-              <BlogCard />
-            </div>
+            {blogState
+              .slice()
+              .reverse()
+              .slice(0, 4)
+              .map((data, index) => (
+                <div className="col-3" key={index}>
+                  <BlogCard
+                    id={data._id}
+                    title={data.title}
+                    updatedAt={data.updatedAt}
+                    images={data.images[0].url}
+                  />
+                </div>
+              ))}
           </div>
         </div>
       </section>

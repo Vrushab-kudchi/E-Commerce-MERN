@@ -273,7 +273,7 @@ footer .input-group-text {
 }
 
 .blog-content p.date {
-  font-size: 13px;
+  font-size: 18px;
   line-height: 24px;
   text-transform: uppercase;
   letter-spacing: 0;
@@ -283,14 +283,25 @@ footer .input-group-text {
 }
 
 .blog-content h5 {
-  font-size: 18px;
+  font-size: 29px;
   color: var(--color-131921);
+  margin-bottom: 20px;
 }
 
 .blog-content p.desc {
   font-size: 13px;
   line-height: 22px;
   color: var(--color-777777);
+}
+
+.single-blog-card {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  box-sizing: border-box;
 }
 
 .single-blog-card a {
@@ -300,17 +311,26 @@ footer .input-group-text {
 }
 
 .single-blog-card h3 {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
   color: var(--color-1c1c1b);
 }
 
+.single-blog-card img {
+  width: 100%;
+  object-fit: cover;
+}
+
 .single-blog-card p {
   color: var(--color-777777);
-  font-size: 14px;
+  font-size: 20px;
 }
 
 /* End Blog Part */
+
+/* Single Blog Part */
+
+/* End Single Blog Part */
 
 /* ProductCard */
 
@@ -324,10 +344,13 @@ footer .input-group-text {
 
 .product-card:hover .action-bar {
   right: 15px;
+  background-color: white;
+  padding: 4px;
 }
 
 .product-card p.description {
   font-size: 13px;
+  padding: 10px;
   color: var(--color-777777);
   margin-right: 20px;
 }
@@ -349,6 +372,10 @@ footer .input-group-text {
 
 .product-card .product-image > img:last-child {
   display: none;
+}
+
+.product-image {
+  margin-bottom: 30px;
 }
 
 .product-card:hover .product-image > img:first-child {
@@ -374,6 +401,8 @@ footer .input-group-text {
 .wishlist-icon {
   top: 2%;
   right: 15px;
+  background-color: white;
+  padding: 5px;
 }
 
 /* End ProductCard */
@@ -590,6 +619,7 @@ footer .input-group-text {
   align-items: center;
   padding: 10px 0px;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
+  height: 100px;
 }
 
 /* End Compare Product */
@@ -841,3 +871,11 @@ footer .input-group-text {
 }
 
 /* End Shipping Page */
+
+/* Formik Error Handle */
+.error {
+  font-size: 12px;
+  color: red;
+  margin-top: 0px;
+}
+/* End Formik Error Handle */

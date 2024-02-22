@@ -6,6 +6,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { deleteBlog, getBlog } from "../features/blog/blogSlice";
 import Custommodel from "../Components/Custommodel";
+import { deleteImage } from "../features/upload/uploadSlice";
 
 const columns = [
   {
@@ -33,10 +34,12 @@ const columns = [
 export const BlogList = () => {
   const [open, setOpen] = useState(false);
   const [deleteBlogId, setDeleteBlogId] = useState("");
+  const [public_id, setPublicId] = useState("");
 
-  const showModal = (id) => {
+  const showModal = (id, public_id) => {
     setOpen(true);
     setDeleteBlogId(id);
+    setPublicId(public_id);
   };
 
   const hideModal = () => {
@@ -67,18 +70,30 @@ export const BlogList = () => {
             <BiEdit />
           </Link>
           <Link className="ms-3 fs-3 text-danger">
-            <AiFillDelete onClick={() => showModal(blogState[i]._id)} />
+            <AiFillDelete
+              onClick={() =>
+                showModal(
+                  blogState[i]._id,
+                  blogState[i]?.images
+                    ? blogState[i]?.images[0]?.public_id
+                    : null
+                )
+              }
+            />
           </Link>
         </>
       ),
     });
   }
-  const handleDeleteBlog = (id) => {
-    dispatch(deleteBlog(id)); // Dispatching the Redux action
+  const handleDeleteBlog = (id, p_id) => {
+    if (p_id != null) {
+      dispatch(deleteImage(p_id));
+    }
+    dispatch(deleteBlog(id));
     setOpen(false);
     setTimeout(() => {
       dispatch(getBlog()); // Refreshing brand list after deletion
-    }, 100);
+    }, 1000);
   };
   return (
     <>
@@ -91,7 +106,7 @@ export const BlogList = () => {
           hideModal={hideModal}
           open={open}
           performAction={() => {
-            handleDeleteBlog(deleteBlogId);
+            handleDeleteBlog(deleteBlogId, public_id);
           }}
           title="Are you sure you want to delete this Blog?"
         />

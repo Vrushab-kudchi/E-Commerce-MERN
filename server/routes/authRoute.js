@@ -25,6 +25,8 @@ import {
   updateOrderStatus,
   getAllOrders,
   getOrderById,
+  deleteSingleCart,
+  updateProductFromCart,
 } from "../controller/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -49,6 +51,11 @@ router.get("/:id", authMiddleware, isAdmin, getAUser);
 router.get("/getorderbyuser/:id", authMiddleware, isAdmin, getOrderById);
 
 router.delete("/empty-cart", authMiddleware, emptyCart);
+router.delete(
+  "/delete-product-cart/:cartItemId",
+  authMiddleware,
+  deleteSingleCart
+);
 router.delete("/:id", deleteAUser);
 
 router.put("/reset-password/:token", resetPassword);
@@ -62,6 +69,11 @@ router.put(
   authMiddleware,
   isAdmin,
   updateOrderStatus
+);
+router.put(
+  "/update-product-cart/:cartItemId/:newQuantity",
+  authMiddleware,
+  updateProductFromCart
 );
 
 export default router;

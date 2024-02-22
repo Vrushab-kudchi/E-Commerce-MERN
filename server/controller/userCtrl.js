@@ -177,7 +177,7 @@ export const getAUser = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
     validateMongodbid(id);
-    const getUser = await User.findById(id);
+    const getUser = await User.findById(id).select("-password");
     res.status(200).send(getUser);
   } catch (error) {
     throw new Error(error);
@@ -295,32 +295,15 @@ export const getWishList = asyncHandler(async (req, res) => {
 
 export const userCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { cart } = req.body;
+  const { productId, color, quantity, price } = req.body;
   validateMongodbid(_id);
   try {
-    let products = [];
-    const user = await User.findById(_id);
-    const alreadyExistCart = await Cart.findOne({ orderBy: user._id });
-    if (alreadyExistCart) {
-      alreadyExistCart.remove();
-    }
-    for (let i = 0; i < cart.length; i++) {
-      let object = {};
-      object.product = cart[i]._id;
-      object.count = cart[i].count;
-      object.color = cart[i].color;
-      let getPrice = await Product.findById(cart[i]._id).select("price").exec();
-      object.price = getPrice.price;
-      products.push(object);
-    }
-    let cartTotal = 0;
-    products.forEach((item) => {
-      cartTotal += item.count * item.price;
-    });
     let newCart = await Cart.create({
-      products,
-      cartTotal,
-      orderBy: user._id,
+      userId: _id,
+      productId,
+      color,
+      quantity,
+      price,
     });
     res.status(200).send(newCart);
   } catch (error) {
@@ -332,8 +315,42 @@ export const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongodbid(_id);
   try {
-    const cart = await Cart.findOne({ orderBy: _id });
+    const cart = await Cart.find({ userId: _id })
+      .populate("productId")
+      .populate("color");
     res.status(200).send(cart);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const deleteSingleCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { cartItemId } = req.params;
+  validateMongodbid(_id);
+  try {
+    const deletecart = await Cart.findOneAndDelete({
+      userId: _id,
+      _id: cartItemId,
+    });
+    res.status(200).send(deletecart);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+export const updateProductFromCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { cartItemId, newQuantity } = req.params;
+  validateMongodbid(_id);
+  try {
+    const updateCart = await Cart.findOne({
+      userId: _id,
+      _id: cartItemId,
+    });
+    updateCart.quantity = newQuantity;
+    updateCart.save();
+    res.status(200).send(updateCart);
   } catch (error) {
     throw new Error(error);
   }

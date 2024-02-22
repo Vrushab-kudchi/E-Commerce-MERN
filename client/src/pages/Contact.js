@@ -6,8 +6,39 @@ import {
   AiFillMail,
   AiFillPhone,
 } from "react-icons/ai";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useDispatch } from "react-redux";
+import { createAEnquiry } from "../features/contact/contactSlice";
+
+const EnquirySchema = Yup.object().shape({
+  name: Yup.string().required("Name is Required"),
+  mobile: Yup.string()
+    .required("Mobile No is Required")
+    .min(10, "Mobile number must be at least 10 characters")
+    .max(10, "Mobile number must be at most 10 characters"),
+  email: Yup.string()
+    .required("Email is Required")
+    .email("Email is not in proper format"),
+  comment: Yup.string().required("Comment is Required"),
+});
 
 export const Contact = () => {
+  const dispatch = useDispatch();
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      mobile: "",
+      email: "",
+      comment: "",
+    },
+    validationSchema: EnquirySchema,
+    onSubmit: (values) => {
+      dispatch(createAEnquiry(values));
+      // alert(JSON.stringify(values, null, 2));
+    },
+  });
   return (
     <>
       <Meta title="Contact Us" />
@@ -31,27 +62,54 @@ export const Contact = () => {
               <div className="contact-inner-wrapper d-flex justify-content-between">
                 <div>
                   <h3 className="contact-title mb-4">Contact</h3>
-                  <form action="" className="d-flex flex-column gap-15">
+                  <form
+                    onSubmit={formik.handleSubmit}
+                    className="d-flex flex-column gap-15"
+                  >
                     <div>
                       <input
                         type="text"
                         className="form-control"
                         placeholder="Name"
+                        name="name"
+                        onChange={formik.handleChange}
+                        value={formik.values.name}
                       />
+                      <div className="error">
+                        {formik.errors.name && formik.touched.name ? (
+                          <div>{formik.errors.name}</div>
+                        ) : null}
+                      </div>
                     </div>
                     <div>
                       <input
                         type="email"
                         className="form-control"
                         placeholder="Email"
+                        name="email"
+                        onChange={formik.handleChange}
+                        value={formik.values.email}
                       />
+                      <div className="error">
+                        {formik.errors.email && formik.touched.email ? (
+                          <div>{formik.errors.email}</div>
+                        ) : null}
+                      </div>
                     </div>
                     <div>
                       <input
                         type="tel"
                         placeholder="Mobile Number"
                         className="form-control"
+                        name="mobile"
+                        onChange={formik.handleChange}
+                        value={formik.values.mobile}
                       />
+                      <div className="error">
+                        {formik.errors.mobile && formik.touched.mobile ? (
+                          <div>{formik.errors.mobile}</div>
+                        ) : null}
+                      </div>
                     </div>
                     <div>
                       <textarea
@@ -60,7 +118,15 @@ export const Contact = () => {
                         cols={30}
                         rows={4}
                         placeholder="Comment"
+                        name="comment"
+                        onChange={formik.handleChange}
+                        value={formik.values.comment}
                       />
+                      <div className="error">
+                        {formik.errors.comment && formik.touched.comment ? (
+                          <div>{formik.errors.comment}</div>
+                        ) : null}
+                      </div>
                     </div>
                     <div>
                       <button type="submit" className="button border-0  ">

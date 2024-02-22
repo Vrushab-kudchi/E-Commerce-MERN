@@ -5,8 +5,11 @@ import wishlist from "../images/wishlist.svg";
 import user from "../images/user.svg";
 import cart from "../images/cart.svg";
 import menu from "../images/menu.svg";
+import { useSelector } from "react-redux";
 
 export const Header = () => {
+  const totalAmountState = useSelector((state) => state?.auth?.totalAmount);
+
   return (
     <>
       <header className="header-top-strip py-3">
@@ -101,8 +104,10 @@ export const Header = () => {
                   >
                     <img src={cart} alt="Cart" />
                     <div className="d-flex flex-column gap-10">
-                      <span className="badge bg-white text-dark">0</span>
-                      <p className="mb-0">Rs 1000</p>
+                      {/* <span className="badge bg-white text-dark">0</span> */}
+                      <p className="mb-0">
+                        {totalAmountState ? totalAmountState : <></>}
+                      </p>
                     </div>
                   </Link>
                 </div>
