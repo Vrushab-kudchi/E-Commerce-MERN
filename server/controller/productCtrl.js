@@ -49,7 +49,12 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 export const getAProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    const findProduct = await Product.findById(id).populate("color");
+    const findProduct = await Product.findById(id)
+      .populate("color")
+      .populate({
+        path: "ratings.postedby",
+        select: ["firstname", "lastname"],
+      });
     res.send(findProduct);
   } catch (error) {
     throw new Error(error);
@@ -65,7 +70,7 @@ export const getAllProduct = asyncHandler(async (req, res) => {
     excludeFields.forEach((el) => delete queryObj[el]);
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`);
-    let query = Product.find(JSON.parse(queryStr));
+    let query = Product.find(JSON.parse(queryStr)).populate("color");
 
     //sort
     if (req.query.sort) {

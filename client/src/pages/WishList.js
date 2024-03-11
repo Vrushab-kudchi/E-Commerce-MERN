@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { getUserData, getUserWishlist } from "../features/users/userSlice";
 import { addToWishList } from "../features/products/productSlice";
+import { Link } from "react-router-dom";
 
 export const WishList = () => {
   const dispatch = useDispatch();
@@ -53,7 +54,10 @@ export const WishList = () => {
                         alt="watch"
                       />
                     </div>
-                    <div className="products-details bg-white p-3 ps-2">
+                    <Link
+                      to={`/product/${item?._id}`}
+                      className="products-details bg-white p-3 ps-2 text-dark"
+                    >
                       <h6 className="brand text-danger">{item?.brand}</h6>
                       <h5 className="product-title">{item?.title}</h5>
                       <ReactStars
@@ -70,7 +74,7 @@ export const WishList = () => {
                       <p className="price fs-5">
                         <b>INR </b> {item?.price}
                       </p>
-                    </div>
+                    </Link>
                   </div>
                 </div>
               );

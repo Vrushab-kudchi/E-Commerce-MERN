@@ -7,20 +7,28 @@ import ReactImageZoom from "react-image-zoom";
 import { Color } from "../components/Color";
 import { TbGitCompare } from "react-icons/tb";
 import { AiOutlineHeart } from "react-icons/ai";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getAProduct } from "../features/products/productSlice";
+import {
+  addRating,
+  getAProduct,
+  getAllProduct,
+} from "../features/products/productSlice";
 import { toast } from "sonner";
 import { addToCart, getUserCart } from "../features/users/userSlice";
 
 export const SingleProduct = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [quantity, setQuantity] = useState(1);
   const [color, setColor] = useState(null);
   const [alreadyAdded, setAlreadyAdded] = useState(false);
+
+  const [star, setStar] = useState(null);
+  const [comment, setComment] = useState(null);
 
   useEffect(() => {
     dispatch(getAProduct(id));
@@ -28,7 +36,9 @@ export const SingleProduct = () => {
   }, [id, dispatch]);
 
   const productState = useSelector((state) => state.product.productData);
+  const productsState = useSelector((state) => state.product.products);
   const userState = useSelector((state) => state.auth.userData);
+  const isLogin = useSelector((state) => state.auth.user);
   const cartState = useSelector((state) => state.auth.cartData);
 
   useEffect(() => {
@@ -38,6 +48,12 @@ export const SingleProduct = () => {
     );
     setAlreadyAdded(!!existingProduct); // Convert to boolean
   }, [cartState, productState]);
+
+  useEffect(() => {
+    if (productsState.length == 0) {
+      dispatch(getAllProduct());
+    }
+  }, [dispatch]);
 
   const props = {
     width: 400,
@@ -59,19 +75,43 @@ export const SingleProduct = () => {
   };
 
   const Cart = (id) => {
-    if (color === null) {
-      toast.error("Please select a color!");
+    if (isLogin) {
+      if (color === null) {
+        toast.error("Please select a color!");
+      } else {
+        dispatch(
+          addToCart({
+            userId: userState?._id,
+            productId: productState?._id,
+            price: productState?.price,
+            quantity,
+            color,
+          })
+        );
+        dispatch(getUserCart());
+      }
+    } else {
+      navigate("/login");
+    }
+  };
+
+  const handleRating = (event) => {
+    event.preventDefault();
+    if (star === null) {
+      toast.error("Please provide a rating.");
+    } else if (!comment) {
+      toast.error("Please provide a comment.");
     } else {
       dispatch(
-        addToCart({
-          userId: userState?._id,
-          productId: productState?._id,
-          price: productState?.price,
-          quantity,
-          color,
+        addRating({
+          star: star,
+          productId: id,
+          comment: comment,
         })
       );
-      dispatch(getUserCart());
+      setTimeout(() => {
+        dispatch(getAProduct(id));
+      }, 100);
     }
   };
 
@@ -219,24 +259,24 @@ export const SingleProduct = () => {
                         >
                           Add to Cart
                         </button>
-                        <button className="button signup" to={"/signup"}>
+                        {/* <button className="button signup" to={"/signup"}>
                           Buy it Now
-                        </button>
+                        </button> */}
                       </div>
                     )}
                   </div>
                   <div className="d-flex align-items-center gap-15">
                     <div>
-                      <Link to="">
+                      {/* <Link to="">
                         <TbGitCompare className="fs-5 me-2" />
                         Add to Compare
-                      </Link>
+                      </Link> */}
                     </div>
                     <div>
-                      <Link to="">
+                      {/* <Link to="">
                         <AiOutlineHeart className="fs-5 me-2" />
                         Add to Wishlist
-                      </Link>
+                      </Link> */}
                     </div>
                   </div>
                   <div className="d-flex gap-10 flex-column my-3">
@@ -313,13 +353,17 @@ export const SingleProduct = () => {
                 </div>
                 <div className="review-form py-4">
                   <h4>Write a Review</h4>
-                  <form action="" className="d-flex flex-column gap-15">
+                  <form
+                    onSubmit={handleRating}
+                    className="d-flex flex-column gap-15"
+                  >
                     <div>
                       <ReactStars
                         count={5}
                         value={0}
                         size={24}
                         activeColor="#ffd700"
+                        onChange={(e) => setStar(e)}
                       />
                     </div>
                     <div>
@@ -329,6 +373,7 @@ export const SingleProduct = () => {
                         cols={30}
                         rows={4}
                         placeholder="Comment"
+                        onChange={(e) => setComment(e.target.value)}
                       />
                     </div>
                     <div className="d-flex justify-content-end">
@@ -339,26 +384,32 @@ export const SingleProduct = () => {
                   </form>
                 </div>
                 <div className="reviws mt-4">
-                  <div className="review ">
-                    <div className="d-flex gap-10 align-items-center">
-                      <h6 className="mb-0">Vrushab</h6>
+                  {productState &&
+                    productState.ratings
+                      .slice()
+                      .reverse()
+                      .map((item, index) => {
+                        return (
+                          <div className="review ">
+                            <div className="d-flex gap-10 align-items-center">
+                              <h6 className="mb-0">
+                                {item?.postedby?.firstname +
+                                  " " +
+                                  item?.postedby?.lastname}
+                              </h6>
 
-                      <ReactStars
-                        count={5}
-                        value={3}
-                        size={24}
-                        activeColor="#ffd700"
-                        edit={false}
-                      />
-                    </div>
-                    <p className="mt-3">
-                      Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                      Aut ratione repellendus ipsam corporis corrupti natus,
-                      obcaecati enim laboriosam illo possimus tempora labore
-                      doloribus rerum blanditiis inventore consequuntur deleniti
-                      fuga deserunt.
-                    </p>
-                  </div>
+                              <ReactStars
+                                count={5}
+                                value={parseFloat(item?.star)}
+                                size={24}
+                                activeColor="#ffd700"
+                                edit={false}
+                              />
+                            </div>
+                            <p className="mt-3">{item?.comment}</p>
+                          </div>
+                        );
+                      })}
                 </div>
               </div>
             </div>
@@ -373,7 +424,12 @@ export const SingleProduct = () => {
               <h3 className="section-heading">Our Popular Products</h3>
             </div>
             <div className="row">
-              <ProductCard />
+              <ProductCard
+                data={productsState?.filter((item) =>
+                  item.tags.includes("popular")
+                )}
+                grid={3}
+              />
             </div>
           </div>
         </div>

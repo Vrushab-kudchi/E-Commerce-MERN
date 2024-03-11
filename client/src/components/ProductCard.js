@@ -35,13 +35,16 @@ export const ProductCard = (props) => {
               // }
               className="product-card position-relative"
             >
-              <div className="wishlist-icon position-absolute">
-                <Link
-                  onClick={() => {
-                    dispatch(addToWishList(item?._id));
+              <div
+                className="wishlist-icon position-absolute"
+                onClick={() => {
+                  dispatch(addToWishList(item?._id));
+                  setTimeout(() => {
                     dispatch(getUserData());
-                  }}
-                >
+                  }, 100);
+                }}
+              >
+                <Link>
                   {userState ? (
                     wishListState.includes(item?._id) ? (
                       <img
@@ -98,15 +101,15 @@ export const ProductCard = (props) => {
               </div>
               <div className="action-bar position-absolute">
                 <div className="d-flex flex-column gap-15">
-                  <Link>
+                  {/* <Link>
                     <img src={productCompare} alt="Add Cart" />
-                  </Link>
+                  </Link> */}
                   <Link to={`/product/${item?._id}`}>
                     <img src={view} alt="view" />
                   </Link>
-                  <Link>
+                  {/* <Link>
                     <img src={addcart} alt="Add Cart" />
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
             </div>

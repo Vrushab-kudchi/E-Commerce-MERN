@@ -35,6 +35,7 @@ export const Login = () => {
   useEffect(() => {
     if (isSuccess) {
       navigate("/");
+      window.location.reload();
     } else if (isError) {
       formik.resetForm();
     }

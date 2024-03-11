@@ -7,15 +7,27 @@ import { SpecialProduct } from "../components/SpecialProduct";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBlogs } from "../features/blogs/blogSlice";
 import { getAllProduct } from "../features/products/productSlice";
+import {
+  getUserCart,
+  getUserData,
+  getUserWishlist,
+} from "../features/users/userSlice";
 
 export const Home = () => {
   const dispatch = useDispatch();
   useEffect(() => {
+    if (userState) {
+      dispatch(getUserWishlist());
+      dispatch(getUserCart());
+      dispatch(getUserData());
+    }
     dispatch(getAllBlogs());
     dispatch(getAllProduct());
   }, [dispatch]);
+
   const blogState = useSelector((state) => state.blog.blogs);
   const productState = useSelector((state) => state.product.products);
+  const userState = useSelector((state) => state.auth.user);
 
   return (
     <>

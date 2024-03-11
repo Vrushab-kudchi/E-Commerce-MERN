@@ -108,6 +108,61 @@ export const updateSingleCart = createAsyncThunk(
   }
 );
 
+export const createOrder = createAsyncThunk(
+  "user/createOrder",
+  async (data, thunkAPI) => {
+    try {
+      return await userService.createOrder(data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const getUserOrders = createAsyncThunk(
+  "user/get-Orders",
+  async (thunkAPI) => {
+    try {
+      return await userService.getUserOrders();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateUser = createAsyncThunk(
+  "user/update-User",
+  async (data, thunkAPI) => {
+    try {
+      return await userService.updateUser(data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const forgotPasswordToken = createAsyncThunk(
+  "user/forgot-password-token",
+  async (data, thunkAPI) => {
+    try {
+      return await userService.forgotPasswordToken(data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  "user/reset-password",
+  async (data, thunkAPI) => {
+    try {
+      return await userService.resetPassword(data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -282,6 +337,117 @@ const authSlice = createSlice({
         state.isError = true;
         state.isSuccess = false;
         state.isMessage = action.error;
+      })
+      .addCase(createOrder.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.isSuccess = false;
+      })
+      .addCase(createOrder.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.isMessage = "Success";
+        state.ordered = action.payload;
+        if (state.isSuccess) {
+          toast.success("Ordered Successfully");
+        }
+      })
+      .addCase(createOrder.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.isMessage = action.error;
+      })
+      .addCase(getUserOrders.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.isSuccess = false;
+      })
+      .addCase(getUserOrders.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.isMessage = "Success";
+        state.getOrderedProducts = action.payload;
+      })
+      .addCase(getUserOrders.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.isMessage = action.error;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.isSuccess = false;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.isMessage = "Success";
+        state.updatedUser = action.payload;
+        if (state.isSuccess) {
+          toast.success("User Info Updated");
+        }
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.isMessage = action.error;
+        if (state.isError) {
+          toast.error("There was a problem updating Please Try Again Later");
+        }
+      })
+      .addCase(forgotPasswordToken.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.isSuccess = false;
+      })
+      .addCase(forgotPasswordToken.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.isMessage = "Success";
+        state.token = action.payload;
+        if (state.isSuccess) {
+          toast.success("Email has been sent successfully!");
+        }
+      })
+      .addCase(forgotPasswordToken.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.isMessage = action.error;
+        if (state.isError) {
+          toast.error("Something went Wrong");
+        }
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.isSuccess = false;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.isMessage = "Success";
+        state.resetPassword = action.payload;
+        if (state.isSuccess) {
+          toast.success("Password has been changed successfully!");
+        }
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.isMessage = action.error;
+        if (state.isError) {
+          toast.error("Something went Wrong");
+        }
       });
   },
 });

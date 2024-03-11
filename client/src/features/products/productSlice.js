@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import productService from "./productService";
+import { toast } from "sonner";
 
 const initialState = {
   isLoading: false,
@@ -11,9 +12,9 @@ const initialState = {
 
 export const getAllProduct = createAsyncThunk(
   "product/getAllProduct",
-  async (thunkAPI) => {
+  async (data, thunkAPI) => {
     try {
-      return await productService.getProduct();
+      return await productService.getProduct(data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -36,6 +37,17 @@ export const getAProduct = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       return await productService.getAProduct(id);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const addRating = createAsyncThunk(
+  "product/set-Rating",
+  async (data, thunkAPI) => {
+    try {
+      return await productService.rateProduct(data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -101,6 +113,30 @@ const productSlice = createSlice({
         state.isError = true;
         state.isSuccess = false;
         state.isMessage = action.payload;
+      })
+      .addCase(addRating.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.isSuccess = false;
+      })
+      .addCase(addRating.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.isMessage = "new Rating Added";
+        state.rating = action.payload;
+        if (state.isSuccess) {
+          toast.success("Your review has been submitted successfully.");
+        }
+      })
+      .addCase(addRating.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.isMessage = action.payload;
+        if (state.isError) {
+          toast.error("Something went Wrong");
+        }
       });
   },
 });
