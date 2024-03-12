@@ -242,7 +242,7 @@ export const Home = () => {
               {" "}
               <ProductCard
                 data={productState.filter((item) =>
-                  item.tags.includes("featured")
+                  item.tags.includes("Featured")
                 )}
                 grid={3}
               />
@@ -361,7 +361,7 @@ export const Home = () => {
                     id={data._id}
                     title={data.title}
                     updatedAt={data.updatedAt}
-                    images={data.images[0].url}
+                    images={data?.images[0]?.url}
                   />
                 </div>
               ))}

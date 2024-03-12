@@ -41,7 +41,7 @@ export const Blog = () => {
                         id={data._id}
                         title={data.title}
                         updatedAt={data.updatedAt}
-                        images={data.images[0].url}
+                        images={data?.images[0]?.url}
                       />
                     </div>
                   );

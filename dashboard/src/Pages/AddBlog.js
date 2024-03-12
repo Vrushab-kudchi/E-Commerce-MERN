@@ -62,15 +62,19 @@ export const AddBlog = () => {
     },
   });
 
-  
   useEffect(() => {
     if (id && blogData) {
-      formik.setValues({
+      const formValues = {
         title: blogData.title || "",
         category: blogData.category || "",
         description: blogData.description || "",
-        images: blogData.images || "",
-      });
+      };
+
+      if (blogData.images) {
+        formValues.images = blogData.images;
+      }
+
+      formik.setValues(formValues);
     }
   }, [id, blogData]);
 

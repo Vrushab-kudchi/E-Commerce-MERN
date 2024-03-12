@@ -18,6 +18,7 @@ const getAProduct = async (id) => {
 };
 
 const updateProduct = async (data) => {
+  console.log(data);
   const response = await axios.put(
     `${baseUrl}/product/${data._id}`,
     data,

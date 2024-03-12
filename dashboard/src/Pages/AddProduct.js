@@ -38,7 +38,6 @@ let productSchema = Yup.object().shape({
     .required("Quantity is required")
     .positive("Quantity must be positive")
     .integer("Quantity must be an integer"),
-  color: Yup.array().required("Color is required"),
   tags: Yup.array().required("tag is required"),
   images: Yup.array().required("images are required"),
 });
@@ -46,7 +45,10 @@ let productSchema = Yup.object().shape({
 export const AddProduct = () => {
   const navigate = useNavigate();
   const [tags, setTags] = useState([]);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState([]);
+
+  const [colors, setColors] = useState([]);
+  const [inputColorValue, setInputColorValue] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -72,15 +74,16 @@ export const AddProduct = () => {
       price: "",
       category: "",
       brand: "",
-      color: [],
       tags: [],
       quantity: "",
       images: null,
     },
     validationSchema: productSchema,
     onSubmit: (values) => {
+      let color = inputColorValue?.map((item) => item.value);
+
       if (!id) {
-        dispatch(createProducts(values));
+        dispatch(createProducts({ ...values, color: color }));
         formik.resetForm();
         setTags([]);
         setInputValue("");
@@ -90,7 +93,12 @@ export const AddProduct = () => {
           navigate("/admin/product-list");
         }, [3000]);
       } else {
-        dispatch(updateProduct({ ...values, _id: id }));
+        let updatedValues = { ...values };
+        if (updatedValues.images && updatedValues.images.length === 0) {
+          delete updatedValues.images;
+        }
+
+        dispatch(updateProduct({ ...updatedValues, _id: id, color }));
         formik.resetForm();
         setTags([]);
         setInputValue("");
@@ -112,9 +120,16 @@ export const AddProduct = () => {
         price: productData.price || "",
         category: productData.category || "",
         brand: productData.brand || "",
-        color: productData.color || [],
+        color:
+          productData?.color?.map((item) => {
+            color.push({ label: item.title, value: item.title });
+          }) || "",
         quantity: productData.quantity || "",
         images: productData.title || null,
+        tags:
+          productData?.tags.map((item) => {
+            tags.push({ label: item, value: item });
+          }) || "",
       });
     }
   }, [id, productData]);
@@ -158,6 +173,14 @@ export const AddProduct = () => {
       value: item._id,
     });
   });
+  useEffect(() => {
+    let editedColor = [];
+    setColors(color);
+    setInputColorValue(editedColor);
+    productData?.color?.map((item) => {
+      editedColor.push({ label: item.title, value: item._id });
+    });
+  }, [colorState, productData]);
 
   return (
     <div>
@@ -267,13 +290,11 @@ export const AddProduct = () => {
             isMulti
             placeholder="Select Colors"
             classNames="text-dark"
-            options={color}
-            onChange={(selectedOptions) => {
-              formik.setFieldValue(
-                "color",
-                selectedOptions.map((option) => option.value)
-              );
+            options={colors}
+            onChange={(selected) => {
+              setInputColorValue(selected);
             }}
+            value={inputColorValue}
           />
           <div className="error">
             {formik.touched.color && formik.errors.color ? (
