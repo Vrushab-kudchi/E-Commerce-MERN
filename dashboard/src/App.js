@@ -34,7 +34,14 @@ function App() {
           <Route path="/" element={<Login />}></Route>
           {/* <Route path="/reset-password" element={<ResetPassword />}></Route>
           <Route path="/forgot-password" element={<ForgotPassword />}></Route> */}
-          <Route path="/admin" element={<MainLayout />}>
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute>
+                <MainLayout />
+              </PrivateRoute>
+            }
+          >
             <Route index element={<Dashboard />} />
             <Route path="enquiries" element={<Enquiries />} />
             <Route path="enquiries/:id" element={<ViewEnquiry />} />
