@@ -9,6 +9,7 @@ import {
   AiOutlineUser,
   AiOutlineBgColors,
 } from "react-icons/ai";
+import { PiSignOutBold } from "react-icons/pi";
 import { RiCoupon3Line } from "react-icons/ri";
 import { IoIosNotifications } from "react-icons/io";
 import { Link, Outlet } from "react-router-dom";
@@ -18,22 +19,33 @@ import { SiBrandfolder } from "react-icons/si";
 import { ImBlog } from "react-icons/im";
 import { Layout, Menu, Button, theme } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../features/auth/authSlice";
 const { Header, Sider, Content } = Layout;
 
 export const MainLayout = () => {
+  const dispatch = useDispatch();
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+  const handleSignOut = () => {
+    localStorage.clear();
+    navigate("/");
+    dispatch(logout());
+  };
+
+  const authState = useSelector((state) => state.auth.user);
+
   return (
-    <Layout /* onContextMenu={(e) => e.preventDefault()} */ >
+    <Layout /* onContextMenu={(e) => e.preventDefault()} */>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical">
           <h2 className="text-white fs-5 text-center py-3 mb-0">
-            <span className="sm-logo">DT</span>
-            <span className="lg-logo">DevTech</span>
+            <span className="sm-logo">QK</span>
+            <span className="lg-logo">Quickar</span>
           </h2>
         </div>
         <Menu
@@ -42,6 +54,7 @@ export const MainLayout = () => {
           defaultSelectedKeys={[""]}
           onClick={({ key }) => {
             if (key === "signout") {
+              handleSignOut();
             } else {
               navigate(key);
             }
@@ -158,6 +171,11 @@ export const MainLayout = () => {
               icon: <FaClipboardList className="fs-4" />,
               label: "Enquiries",
             },
+            {
+              key: "signout",
+              icon: <PiSignOutBold className="fs-4" />,
+              label: "Sign Out",
+            },
           ]}
         />
       </Sider>
@@ -192,7 +210,7 @@ export const MainLayout = () => {
                 <img
                   width={32}
                   height={32}
-                  src="https://stroyka-admin.html.themeforest.scompiler.ru/variants/ltr/images/customers/customer-4-64x64.jpg"
+                  src="https://cdn1.iconfinder.com/data/icons/website-internet/48/website_-_male_user-512.png"
                   alt=""
                 />
               </div>
@@ -202,8 +220,10 @@ export const MainLayout = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <h5 className="mb-0">Vrushab</h5>
-                <p className="mb-0">Kudchivrushab@gmail.com</p>
+                <h5 className="mb-0">
+                  {authState.firstname} {authState.lastname}
+                </h5>
+                <p className="mb-0">{authState.email}</p>
               </div>
               <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <li>
@@ -216,13 +236,13 @@ export const MainLayout = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link
+                  <button
                     className="dropdown-item py-1 mb-1"
                     style={{ height: "auto", lineHeight: "20px" }}
-                    to="/"
+                    onClick={() => handleSignOut()}
                   >
                     Signout
-                  </Link>
+                  </button>
                 </li>
               </div>
             </div>

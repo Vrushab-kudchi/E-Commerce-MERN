@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { CustomInput } from "../Components/CustomInput";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,8 +12,8 @@ export const Login = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: "",
-      password: "",
+      email: "kudchivrushab@gmail.com",
+      password: "111",
     },
     validationSchema: Yup.object().shape({
       email: Yup.string().email("invalid email").required("enter the email"),
@@ -86,9 +86,9 @@ export const Login = () => {
                 <div>{formik.errors.password}</div>
               ) : null}
             </div>
-            <div className="mb-3 text-end">
+            {/* <div className="mb-3 text-end">
               <Link to={"/forgot-password"}>Forgot Password ?</Link>
-            </div>
+            </div> */}
             <button
               className="border-0 px-3 py-2 text-white w-100"
               type="submit"

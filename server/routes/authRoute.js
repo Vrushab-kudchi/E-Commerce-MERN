@@ -22,9 +22,9 @@ import {
   // applyCoupon,
   createOrder,
   // getOrders,
-  // updateOrderStatus,
-  // getAllOrders,
-  // getOrderById,
+  updateOrderStatus,
+  getAllOrders,
+  getOrderById,
   deleteSingleCart,
   updateProductFromCart,
   getUserOrders,
@@ -47,12 +47,12 @@ router.post("/order/paymentVerification", authMiddleware, paymentVerification);
 router.get("/all-users", getAllUser);
 router.get("/refresh", handleRefreshToken);
 router.get("/logout", logout);
-// router.get("/all-orders", authMiddleware, isAdmin, getAllOrders);
+router.get("/all-orders", authMiddleware, isAdmin, getAllOrders);
 router.get("/getmyorders", authMiddleware, getUserOrders);
 router.get("/cart", authMiddleware, getUserCart);
 router.get("/wishlist", authMiddleware, getWishList);
 router.get("/:id", authMiddleware, getAUser);
-// router.get("/getorderbyuser/:id", authMiddleware, isAdmin, getOrderById);
+router.get("/getorderbyuser/:id", authMiddleware, isAdmin, getOrderById);
 
 // router.delete("/empty-cart", authMiddleware, emptyCart);
 router.delete(
@@ -68,12 +68,12 @@ router.put("/password", authMiddleware, updatePassword);
 router.put("/edit-user", authMiddleware, updateAUser);
 router.put("/block-user/:id", authMiddleware, blockUser);
 router.put("/unblock-user/:id", authMiddleware, unblockUser);
-// router.put(
-//   "/order/update-order/:id",
-//   authMiddleware,
-//   isAdmin,
-//   updateOrderStatus
-// );
+router.put(
+  "/order/update-order/:id",
+  authMiddleware,
+  isAdmin,
+  updateOrderStatus
+);
 router.put(
   "/update-product-cart/:cartItemId/:newQuantity",
   authMiddleware,

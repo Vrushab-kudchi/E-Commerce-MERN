@@ -55,13 +55,11 @@ var productSchema = new mongoose.Schema(
       {
         star: {
           type: Number,
-          required: true,
         },
         comment: String,
         postedby: {
           type: mongoose.Types.ObjectId,
           ref: "User",
-          unique: true,
         },
       },
     ],

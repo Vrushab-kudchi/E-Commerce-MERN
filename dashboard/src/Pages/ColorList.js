@@ -17,7 +17,7 @@ const columns = [
     dataIndex: "key",
   },
   {
-    title: "Name",
+    title: "Color",
     dataIndex: "name",
   },
   {
@@ -51,7 +51,16 @@ export const ColorList = () => {
   for (let i = 0; i < colorState?.length; i++) {
     data1.push({
       key: i + 1,
-      name: colorState[i].title,
+      name: (
+        <div
+          style={{
+            height: "20px",
+            width: "20px",
+            borderRadius: "100%",
+            backgroundColor: colorState[i].title,
+          }}
+        ></div>
+      ),
       action: (
         <>
           <Link

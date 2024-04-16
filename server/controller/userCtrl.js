@@ -486,43 +486,60 @@ export const getUserOrders = asyncHandler(async (req, res) => {
 //   }
 // });
 
-// export const getAllOrders = asyncHandler(async (req, res) => {
-//   try {
-//     const allUserOrders = await Order.find()
-//       .populate("products.product")
-//       .populate("orderBy");
-//     res.json(allUserOrders);
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// });
+export const getAllOrders = asyncHandler(async (req, res) => {
+  try {
+    const allUserOrders = await Order.find()
+      .populate({
+        path: "orderItems.product",
+        select: "title",
+      })
+      .populate({
+        path: "orderItems.color",
+        select: "title",
+      })
+      .populate({
+        path: "user",
+        select: ["firstname", "lastname"],
+      });
+    res.json(allUserOrders);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
-// export const getOrderById = asyncHandler(async (req, res) => {
-//   const { id } = req.params;
-//   validateMongodbid(id);
-//   try {
-//     const getOrder = await Order.findOne({ orderBy: id })
-//       .populate("products.product")
-//       .populate("orderBy");
-//     res.json(getOrder);
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// });
+export const getOrderById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbid(id);
+  try {
+    const getOrder = await Order.findOne({ _id: id })
+      .populate({
+        path: "orderItems.product",
+        select: "title",
+      })
+      .populate({
+        path: "orderItems.color",
+        select: "title",
+      })
+      .populate({
+        path: "user",
+        select: ["firstname", "lastname"],
+      });
+    res.json(getOrder);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
-// export const updateOrderStatus = asyncHandler(async (req, res) => {
-//   const { id } = req.params;
-//   const { status } = req.body;
-//   validateMongodbid(id);
-//   try {
-//     const updateOrderStatus = await Order.findByIdAndUpdate(id, {
-//       orderStatus: status,
-//       paymentIntent: {
-//         status: status,
-//       },
-//     });
-//     res.status(200).send(updateOrderStatus);
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// });
+export const updateOrderStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  validateMongodbid(id);
+  try {
+    const updateOrderStatus = await Order.findByIdAndUpdate(id, {
+      orderStatus: status,
+    });
+    res.status(200).send(updateOrderStatus);
+  } catch (error) {
+    throw new Error(error);
+  }
+});

@@ -3,19 +3,12 @@ import { Table } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrder } from "../features/auth/authSlice";
 import { useParams } from "react-router-dom";
+import moment from "moment";
 
 const columns = [
   {
-    title: "SNo",
-    dataIndex: "key",
-  },
-  {
     title: "Product Name",
     dataIndex: "name",
-  },
-  {
-    title: "Brand",
-    dataIndex: "brand",
   },
   {
     title: "Count",
@@ -30,8 +23,8 @@ const columns = [
     dataIndex: "amount",
   },
   {
-    title: "Date",
-    dataIndex: "date",
+    title: "Time",
+    dataIndex: "time",
   },
 ];
 
@@ -47,19 +40,28 @@ export const ViewOrder = () => {
   const data1 = [];
   const orderState = useSelector((state) => state.auth);
 
-  console.log(orderState);
-
-  orderState?.orderData?.products.map((item, index) =>
-    data1.push({
-      key: index + 1,
-      name: item.product.title,
-      brand: item.product.brand,
-      count: item.count,
-      amount: item.product.price,
-      color: item.color,
-      date: item.product.createdAt,
-    })
-  );
+  data1.push({
+    name: orderState?.orderData?.orderItems.map((item) => {
+      return item?.product?.title;
+    }),
+    count: orderState?.orderData?.orderItems.map((item) => {
+      return item?.quantity;
+    }),
+    amount: orderState?.orderData?.totalPrice,
+    color: orderState?.orderData?.orderItems.map((item) => {
+      return (
+        <div
+          style={{
+            height: "20px",
+            width: "20px",
+            borderRadius: "100%",
+            backgroundColor: item?.color?.title,
+          }}
+        ></div>
+      );
+    }),
+    time: moment(orderState?.orderData?.createdAt).fromNow(),
+  });
 
   return (
     <>
